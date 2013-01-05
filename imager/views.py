@@ -86,6 +86,9 @@ class TransloadHandler(BaseHandler, DatabaseMixin):
 class ImageHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
     def get(self, b62):
+        if b62 is None:
+            raise cyclone.web.HTTPError(404)
+
         (mime, img_path) = yield self._get_image_by_b62(b62)
         self.set_header("Content-Type", mime)
 
