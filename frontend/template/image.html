@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block page %}
+<div class="row-fluid marketing">
+        <div class="span4">
+        </div>
+        <div class="span4">
+          <img src='/img/{{image}}' alt='{{image}}'>
+          <br><br>
+          <h4 id="name"></h4>
+        </div>
+
+        <div class="span4">
+          <ul class="unstyled">
+            <li><a href="/img/{{image}}">raw image</a></li>
+            <li><span id="clicks"></span> hits</li>
+            <li><a href="#" id="ll"><span id="likes"></span> <i class="icon-thumbs-up icon-large"></i></a></li>
+            <li><a href="#" id="dl"><span id="dislikes"></span> <i class="icon-thumbs-down icon-large"></i></a></li>
+        </ul>
+        </div>
+      </div>
+    <br><br><br>
+    <script>
+        load_image_data = function(){ 
+            $.get('/imgdata/{{image}}', function(data) {
+                $('#name').html(data.name);                                         
+                $('#clicks').html(data.clicks);                                         
+                $('#likes').html(data.likes);                                         
+                $('#dislikes').html(data.dislikes);                                         
+            });                                                                 
+        }
+        
+        like = function() { 
+                $.get('/like/{{image}}', function(d){
+                    $("#likes").html(d);
+                })
+            }
+        
+        dislike = function() { 
+                $.get('/dislike/{{image}}', function(d){$("#dislikes").html(d);})
+            }
+
+
+        main = function(){
+            load_image_data("{{image}}");   
+            $("#ll").click(like)
+            $("#dl").click(dislike)
+        };
+        $(main);
+    </script>
+{% end %}
+

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block page %}
+<div class="row">
+    <div class="span6">
+
+        <br><br>
+        <form class="well" method="post" action="/upload" enctype="multipart/form-data">
+        <legend>File upload</legend>
+
+            <div class="fileupload fileupload-new" data-provides="fileupload">
+              <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
+              <div>
+                <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span><input type="file" / name="file"></span>
+                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+              </div>
+            </div>
+
+          <button type="submit" class="btn">Submit</button>
+        </form>
+     </div>
+</div>
+
+
+<div class="row">
+    <div class="span6">
+
+        <form class="well" method="post" action="/transload">
+            <legend>Image Transload</legend>
+            <label>URL</label>
+            <input type="text" name="url" placeholder="Url to load image from">
+            <button type="submit" class="btn">Submit</button>
+        </form>
+
+
+                 </div>
+</div>
+{% end %}
