@@ -30,13 +30,13 @@
         }
         
         like = function() { 
-                $.get('/like/{{image}}', function(d){
+                $.post('/like/{{image}}', function(d){
                     $("#likes").html(d);
                 })
             }
         
         dislike = function() { 
-                $.get('/dislike/{{image}}', function(d){$("#dislikes").html(d);})
+                $.post('/dislike/{{image}}', function(d){$("#dislikes").html(d);})
             }
 
 

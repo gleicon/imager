@@ -101,6 +101,10 @@ class BaseHandler(cyclone.web.RequestHandler):
         mime = yield self.redis.hget(self.IMAGER_PREFIX % uuid, 'mime')
         yield self.redis.hincr(self.IMAGER_PREFIX % uuid, 'clicks')
         yield self.redis.zincrby(self.IMAGER_CLICK_RANKING, 1, b62)
+
+        if img_path is None:
+            defer.returnValue((None, None))
+
         if mime is None:
             mime = mimetypes.guess_type(img_path)[0]
             self.set_header("Content-Type", mime)
@@ -137,11 +141,22 @@ class BaseHandler(cyclone.web.RequestHandler):
         defer.returnValue(cyclone.escape.json_encode(data))
 
     @defer.inlineCallbacks
+    def _image_exists(self, b62):
+        if b62 is None:
+            raise cyclone.web.HTTPError(404)
+
+        uuid = base62_decode(b62)
+        data = yield self.redis.exists(self.IMAGER_PREFIX % uuid)
+        if data == 0:
+            raise cyclone.web.HTTPError(404)
+        defer.returnValue(data)
+
+    @defer.inlineCallbacks
     def _throttle(self, b62, ip):
         """
             throttle by b62 hash + IP address + timestamp as: x reqs per minute
         """
         lt = time.localtime()
-        ts = time.strftime("%Y:%m:%d:%H:%M", lt)
+        ts = time.strftime("%Y:%m:%d:%H", lt)
         t = yield self.redis.incr(self.IMAGE_URL_THROTTLE % (ts, b62, ip))
         defer.returnValue(t)

@@ -86,10 +86,11 @@ class TransloadHandler(BaseHandler, DatabaseMixin):
 class ImageHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
     def get(self, b62):
-        if b62 is None:
+        yield self._image_exists(b62)
+        (mime, img_path) = yield self._get_image_by_b62(b62)
+        if img_path is None:
             raise cyclone.web.HTTPError(404)
 
-        (mime, img_path) = yield self._get_image_by_b62(b62)
         self.set_header("Content-Type", mime)
 
         object_file = open(img_path, "r")
@@ -100,13 +101,17 @@ class ImageHandler(BaseHandler, DatabaseMixin):
 
 
 class ImageViewerHandler(BaseHandler, DatabaseMixin):
+    @defer.inlineCallbacks
     def get(self, b62):
+        yield self._image_exists(b62)
         self.render('image.html', image=b62)
+
 
 
 class ImageDataHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
     def get(self, b62):
+        yield self._image_exists(b62)
         data = yield self._get_image_data(b62)
         self.set_header("Content-Type", "application/json")
         self.finish(data)
@@ -114,7 +119,9 @@ class ImageDataHandler(BaseHandler, DatabaseMixin):
 
 class ImageLikeHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
-    def get(self, b62):
+    def post(self, b62):
+        yield self._image_exists(b62)
+
         t = yield self._throttle(b62, self.request.remote_ip)
 
         if t > self.settings.max_req_per_min:
@@ -126,7 +133,9 @@ class ImageLikeHandler(BaseHandler, DatabaseMixin):
 
 class ImageDislikeHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
-    def get(self, b62):
+    def post(self, b62):
+        v = yield self._image_exists(b62)
+
         t = yield self._throttle(b62, self.request.remote_ip)
 
         if t > self.settings.max_req_per_min:
