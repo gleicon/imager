@@ -160,3 +160,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         ts = time.strftime("%Y:%m:%d:%H", lt)
         t = yield self.redis.incr(self.IMAGE_URL_THROTTLE % (ts, b62, ip))
         defer.returnValue(t)
+
+    def _render(self, page, **kwargs):
+        kwargs['base_domain'] = self.settings.base_domain
+        self.render(page, **kwargs)

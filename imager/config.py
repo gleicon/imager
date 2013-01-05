@@ -42,6 +42,7 @@ def my_parse_config(filename):
     conf["cookie_secret"] = cp.get("server", "cookie_secret")
     conf["xsrf_cookies"] = tryget(cp.getboolean,
                                   "server", "xsrf_cookies", False)
+    conf["base_domain"] = tryget(cp.get, "server", "base_domain")
 
     # make relative path absolute to this file's parent directory
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

@@ -25,17 +25,17 @@ import cyclone.web
 
 class IndexHandler(BaseHandler):
     def get(self):
-        self.render("index.html")
+        self._render("index.html")
 
 
 class AboutHandler(BaseHandler):
     def get(self):
-        self.render("about.html")
+        self._render("about.html")
 
 
 class InvalidFileHandler(BaseHandler):
     def get(self):
-        self.render("invalid_file.html")
+        self._render("invalid_file.html")
 
 
 class UploadHandler(BaseHandler, DatabaseMixin):
@@ -63,8 +63,17 @@ class UploadHandler(BaseHandler, DatabaseMixin):
 
 
 class TransloadHandler(BaseHandler, DatabaseMixin):
+
+    @defer.inlineCallbacks
+    def get(self):
+        yield self._transload()
+
     @defer.inlineCallbacks
     def post(self):
+        yield self._transload()
+
+    @defer.inlineCallbacks
+    def _transload(self):
         """
             accepts url, parameter -> url
         """
@@ -104,7 +113,7 @@ class ImageViewerHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
     def get(self, b62):
         yield self._image_exists(b62)
-        self.render('image.html', image=b62)
+        self._render('image.html', image=b62)
 
 
 

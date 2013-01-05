@@ -20,7 +20,7 @@ For production:
     	   --pidfile=/var/run/imager.pid \
 	   -r imager.web.Application
 
-Don't forget to change the filestore path at imager.conf. Most of the /tmp filesystems are ram based and used only for testing.
+Don't forget to change the base_domain and filestore path at imager.conf. Most of the /tmp filesystems are ram based and used only for testing.
 
 If you want to use nginx in front of it, explore the configuration files at scripts/, change the xheaders option at imager.conf to true and create a vhost on nginx that take care about the body size like this:
 
