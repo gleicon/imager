@@ -126,12 +126,14 @@ class BaseHandler(cyclone.web.RequestHandler):
     def _like(self, b62):
         uuid = base62_decode(b62)
         v = yield self.redis.hincrby(self.IMAGER_PREFIX % uuid, 'likes', 1)
+        yield self.redis.zincrby(self.IMAGER_LIKE_RANKING, 1, b62)
         defer.returnValue(v)
 
     @defer.inlineCallbacks
     def _dislike(self, b62):
         uuid = base62_decode(b62)
         v = yield self.redis.hincrby(self.IMAGER_PREFIX % uuid, 'dislikes', 1)
+        yield self.redis.zincrby(self.IMAGER_DISLIKE_RANKING, 1, b62)
         defer.returnValue(v)
 
     @defer.inlineCallbacks
