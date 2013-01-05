@@ -24,7 +24,7 @@ Don't forget to change the filestore path at imager.conf. Most of the /tmp files
 
 If you want to use nginx in front of it, explore the configuration files at scripts/, change the xheaders option at imager.conf to true and create a vhost on nginx that take care about the body size like this:
 
-server {
+    server {
         listen   80;
         server_name  yourservername
 
@@ -54,7 +54,7 @@ server {
 
         }
 
-}
+    }
 
 
 ### Cookie Secret
@@ -66,5 +66,5 @@ creation of this package. However, if you need a new one, you may run the
 ## Credits
 
 (c) 2013 
-  [gleicon](http://blog.7co.cc)
-- [cyclone](http://github.com/fiorix/cyclone) web server.
+    - [gleicon](http://blog.7co.cc)
+    - [cyclone](http://github.com/fiorix/cyclone) web server.
