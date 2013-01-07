@@ -24,17 +24,23 @@ import cyclone.web
 
 
 class IndexHandler(BaseHandler):
+    @defer.inlineCallbacks
     def get(self):
+        yield self.incr("index_counter")
         self._render("index.html")
 
 
 class AboutHandler(BaseHandler):
+    @defer.inlineCallbacks
     def get(self):
+        yield self.incr("about_counter")
         self._render("about.html")
 
 
 class InvalidFileHandler(BaseHandler):
+    @defer.inlineCallbacks
     def get(self):
+        yield self.incr("invalid_file_counter")
         self._render("invalid_file.html")
 
 
@@ -57,8 +63,10 @@ class UploadHandler(BaseHandler, DatabaseMixin):
             else:
                 bid = yield self._save_and_create_uuid(fname, fbody,
                                                        mime, None)
+                yield self.incr("invalid_file_counter")
                 self.redirect("/i/%s" % bid)
         else:
+            yield self.incr("error_counter")
             self.redirect("/error.html")
 
 
@@ -87,8 +95,10 @@ class TransloadHandler(BaseHandler, DatabaseMixin):
             else:
                 bid = yield self._save_and_create_uuid(fname, fbody,
                                                        mime, url)
+                yield self.incr("transload_counter")
                 self.redirect("/i/%s" % bid)
         else:
+            yield self.incr("error_counter")
             self.redirect("/error.html")
 
 
@@ -104,6 +114,7 @@ class ImageHandler(BaseHandler, DatabaseMixin):
 
         object_file = open(img_path, "r")
         try:
+            yield self.incr("raw_image_view_counter")
             self.finish(object_file.read())
         finally:
             object_file.close()
@@ -113,8 +124,8 @@ class ImageViewerHandler(BaseHandler, DatabaseMixin):
     @defer.inlineCallbacks
     def get(self, b62):
         yield self._image_exists(b62)
+        yield self.incr("image_view_handler_counter")
         self._render('image.html', image=b62)
-
 
 
 class ImageDataHandler(BaseHandler, DatabaseMixin):
@@ -122,6 +133,7 @@ class ImageDataHandler(BaseHandler, DatabaseMixin):
     def get(self, b62):
         yield self._image_exists(b62)
         data = yield self._get_image_data(b62)
+        yield self.incr("image_data_handler_counter")
         self.set_header("Content-Type", "application/json")
         self.finish(data)
 
@@ -137,6 +149,7 @@ class ImageLikeHandler(BaseHandler, DatabaseMixin):
             raise cyclone.web.HTTPError(401)
 
         v = yield self._like(b62)
+        yield self.incr("image_like_handler_counter")
         self.finish("%d" % v)
 
 
@@ -151,4 +164,5 @@ class ImageDislikeHandler(BaseHandler, DatabaseMixin):
             raise cyclone.web.HTTPError(401)
 
         v = yield self._dislike(b62)
+        yield self.incr("image_dislike_handler_counter")
         self.finish("%d" % v)

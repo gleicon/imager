@@ -24,6 +24,35 @@ from base62 import base62_encode, base62_decode
 import os
 import mimetypes
 import time
+import txmetrics
+
+
+class MetricsMixin(object):
+    metrics_factory = None
+    
+    @classmethod
+    @defer.inlineCallbacks
+    def setup(self, redis):
+        yield redis._connected
+        self.metrics_factory = txmetrics.TxMetricsFactory("imager", redis=redis)
+        self.index_counter = yield self.metrics_factory.new_counter("index")
+        self.upload_counter = yield self.metrics_factory.new_counter("uploads")
+        self.transload_counter = yield self.metrics_factory.new_counter("transloads")
+        self.invalid_file_counter = yield self.metrics_factory.new_counter("invalid_files")
+        self.error_counter = yield self.metrics_factory.new_counter("errors")
+        self.not_found_counter = yield self.metrics_factory.new_counter("not_found")
+        self.unauthorized_counter = yield self.metrics_factory.new_counter("unauthorized")
+        self.raw_image_view_counter = yield self.metrics_factory.new_counter("raw_images_served")
+        self.image_view_handler_counter = yield self.metrics_factory.new_counter("images_viewed")
+        self.image_data_handler_counter = yield self.metrics_factory.new_counter("image_data_served")
+        self.image_like_handler_counter = yield self.metrics_factory.new_counter("total_likes")
+        self.image_dislike_handler_counter = yield self.metrics_factory.new_counter("total_dislikes")
+
+    def incr(self, metric_name):
+        counter = getattr(self, metric_name)
+        m = getattr(counter, "incr")
+        if m is not None:
+            m()
 
 
 class TemplateFields(dict):
@@ -39,7 +68,7 @@ class TemplateFields(dict):
         self[name] = value
 
 
-class BaseHandler(cyclone.web.RequestHandler):
+class BaseHandler(cyclone.web.RequestHandler, MetricsMixin):
     IMAGER_UUID = 'IMAGER:UUID:'
     IMAGER_CLICK_RANKING = 'IMAGER:CLICK:RANKING'
     IMAGER_LIKE_RANKING = 'IMAGER:LIKE:RANKING'

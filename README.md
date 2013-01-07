@@ -3,10 +3,14 @@
 	This project is based on cyclone.io default template.
     It is an image hosting application. It uses Redis to store metadata and filesystem to store the image itself.
     This application is quite naive in terms of ranking and throttle control. Images can be liked/disliked, the number of hits is accounted but there's plenty of room to improve filtering and throttling. Throttle control is configured on 1 click per hour per image (for like/dislike but can be extended to other actions)
-
+    
 # Running
 
 You can use supervisord or another process supervisor to run imager/start.sh script or raw twistd command instead.
+
+Install cyclone and txmetrics with pip
+
+Clone this repository or download the tar.gz/zip file
 
 For development and testing:
 

@@ -22,6 +22,7 @@ import cyclone.web
 from imager import views
 from imager import config
 from imager.storage import DatabaseMixin
+from imager.utils import MetricsMixin
 
 
 class Application(cyclone.web.Application):
@@ -54,6 +55,7 @@ class Application(cyclone.web.Application):
 
         # Set up database connections
         DatabaseMixin.setup(conf)
+        MetricsMixin.setup(DatabaseMixin.redis)
 
         #conf["login_url"] = "/auth/login"
         #conf["autoescape"] = None
