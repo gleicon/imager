@@ -4,7 +4,7 @@
         <div class="span4">
         </div>
         <div class="span4">
-          <img src='/img/{{image}}' alt='{{image}}'>
+          <a href="/img/{{image}}"><img src='/img/{{image}}' alt='{{image}}'></a>
           <br><br>
           <h4 id="name"></h4>
         </div>
@@ -20,28 +20,28 @@
       </div>
     <br><br><br>
     <script>
-        load_image_data = function(){ 
+        load_image_data = function(){
             $.get('/imgdata/{{image}}', function(data) {
-                $('#name').html(data.name);                                         
-                $('#clicks').html(data.clicks);                                         
-                $('#likes').html(data.likes);                                         
-                $('#dislikes').html(data.dislikes);                                         
-            });                                                                 
+                $('#name').html(data.name);
+                $('#clicks').html(data.clicks);
+                $('#likes').html(data.likes);
+                $('#dislikes').html(data.dislikes);
+            });
         }
-        
-        like = function() { 
+
+        like = function() {
                 $.post('/like/{{image}}', function(d){
                     $("#likes").html(d);
                 })
             }
-        
-        dislike = function() { 
+
+        dislike = function() {
                 $.post('/dislike/{{image}}', function(d){$("#dislikes").html(d);})
             }
 
 
         main = function(){
-            load_image_data("{{image}}");   
+            load_image_data("{{image}}");
             $("#ll").click(like)
             $("#dl").click(dislike)
         };
