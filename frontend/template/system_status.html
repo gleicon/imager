@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block page %}
+<div class="row-fluid marketing">
+        <div class="span4">
+        </div>
+        <div class="span4">
+          <h4>System status</h4>
+        </div>
+
+        <div class="span4">
+          <ul class="list-group">
+            <li class="list-group-item">Total hits on index.html (/): <span id="index_counter"></span></li>
+            <li class="list-group-item">Total uploads: <span id="uploads_counter"></span></li>
+            <li class="list-group-item">Total errors: <span id="error_counter"></span></li>
+            <li class="list-group-item">Total unauthorized (401): <span id="unauthorized_counter"></span></li>
+            <li class="list-group-item">Hits on image status data (/imgdata/): <span id="image_status_handler_counter"></span></li>
+            <li class="list-group-item">Total not found (404): <span id="not_found_counter"></span></li>
+            <li class="list-group-item">Total invalid file type: <span id="invalid_file_counter"></span></li>
+            <li class="list-group-item">Total transloads: <span id="transload_counter"></span></li>
+            <li class="list-group-item">Total likes: <span id="image_like_handler_counter"></span></li>
+            <li class="list-group-item">Total dislikes: <span id="image_dislike_handler_counter"></span></li>
+            <li class="list-group-item">Total image views: <span id="image_view_handler_counter"></span></li>
+            <li class="list-group-item">Total raw image views: <span id="raw_image_view_counter"></span></li>
+            <li class="list-group-item">Total system status views: <span id="system_status_dump_counter"></span></li>
+        </ul>
+        </div>
+      </div>
+    <br><br><br>
+    <script>
+        load_status_data = function(){
+		$.get('/api/v1/system_status', function(data) {
+			$.each(data, function(k, v) {
+                	  $('#'+k).html(v);
+		  });
+	  });
+        }
+
+        main = function(){
+	    load_status_data()
+        };
+        $(main);
+    </script>
+{% end %}
+

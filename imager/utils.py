@@ -47,7 +47,29 @@ class MetricsMixin(object):
         self.image_data_handler_counter = yield self.metrics_factory.new_counter("image_data_served")
         self.image_like_handler_counter = yield self.metrics_factory.new_counter("total_likes")
         self.image_dislike_handler_counter = yield self.metrics_factory.new_counter("total_dislikes")
-
+        self.image_status_handler_counter = yield self.metrics_factory.new_counter("images_statused")
+        self.system_status_dump_counter = yield self.metrics_factory.new_counter("system_status")
+    
+    @defer.inlineCallbacks
+    def dump(self):
+        metrics={}
+        self.incr("system_status_dump_counter")
+        metrics["index_counter"]=yield self.index_counter.get_value()
+        metrics["uploads_counter"]=yield self.upload_counter.get_value()
+        metrics["transload_counter"]=yield self.transload_counter.get_value()
+        metrics["invalid_file_counter"]=yield self.invalid_file_counter.get_value()
+        metrics["error_counter"]=yield self.error_counter.get_value()
+        metrics["not_found_counter"]=yield self.not_found_counter.get_value()
+        metrics["unauthorized_counter"]=yield self.unauthorized_counter.get_value()
+        metrics["raw_image_view_counter"]=yield self.raw_image_view_counter.get_value()
+        metrics["image_view_handler_counter"]=yield self.image_view_handler_counter.get_value()
+        metrics["image_data_handler_counter"]=yield self.image_data_handler_counter.get_value()
+        metrics["image_like_handler_counter"]=yield self.image_like_handler_counter.get_value()
+        metrics["image_dislike_handler_counter"]=yield self.image_dislike_handler_counter.get_value()
+        metrics["image_status_handler_counter"]=yield self.image_status_handler_counter.get_value()
+        metrics["system_status_dump_counter"]=yield self.system_status_dump_counter.get_value()
+        defer.returnValue(cyclone.escape.json_encode(metrics))
+        
     def incr(self, metric_name):
         counter = getattr(self, metric_name)
         m = getattr(counter, "incr")
@@ -133,10 +155,9 @@ class BaseHandler(cyclone.web.RequestHandler, MetricsMixin):
 
         if img_path is None:
             defer.returnValue((None, None))
-
-        if mime is None:
+    
+        if mime is None or mime not in self.IMAGE_MIME_LIST:
             mime = mimetypes.guess_type(img_path)[0]
-            self.set_header("Content-Type", mime)
             yield self.redis.hset(self.IMAGER_PREFIX % uuid, 'mime', mime)
 
         defer.returnValue((mime, img_path))
@@ -169,16 +190,20 @@ class BaseHandler(cyclone.web.RequestHandler, MetricsMixin):
     def _get_image_data(self, b62):
         uuid = base62_decode(b62)
         data = yield self.redis.hgetall(self.IMAGER_PREFIX % uuid)
+        del(data["path"])
+        del(data["uploader_addr"])
         defer.returnValue(cyclone.escape.json_encode(data))
 
     @defer.inlineCallbacks
     def _image_exists(self, b62):
         if b62 is None:
+            self.incr("not_found_counter")
             raise cyclone.web.HTTPError(404)
 
         uuid = base62_decode(b62)
         data = yield self.redis.exists(self.IMAGER_PREFIX % uuid)
         if data == 0:
+            self.incr("not_found_counter")
             raise cyclone.web.HTTPError(404)
         defer.returnValue(data)
 

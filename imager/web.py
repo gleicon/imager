@@ -40,6 +40,8 @@ class Application(cyclone.web.Application):
             (r"/like/(.+)",  views.ImageLikeHandler),
             (r"/dislike/(.+)",  views.ImageDislikeHandler),
             (r"/i/(.+)",    views.ImageViewerHandler),
+            (r"/system_status",    views.SystemStatusHandler),
+            (r"/api/v1/system_status",    views.SystemStatusAPIHandler),
             (r"/css/(.+)",    cyclone.web.StaticFileHandler,
                 {"path": "%s/css" % static_path}),
             (r"/js/(.+)",    cyclone.web.StaticFileHandler,

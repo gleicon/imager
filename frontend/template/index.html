@@ -5,19 +5,28 @@
 
         <br><br>
         <form class="well" method="post" action="/upload" enctype="multipart/form-data">
-        <legend>File upload</legend>
-
-            <div class="fileupload fileupload-new" data-provides="fileupload">
-              <div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>
-              <div>
-                <span class="btn btn-file"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span><input type="file" / name="file"></span>
-                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-              </div>
-            </div>
-          <button type="submit" class="btn">Submit</button>
+		<legend>File upload</legend>
+		<div class="fileinput fileinput-new" data-provides="fileinput">
+			  <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+				<img data-src="holder.js/100%x100%">
+			  </div>
+			  
+			  <div class="fileinput-preview thumbnail" style="max-width: 200px; max-height: 150px;"></div>
+				<div>
+					<span class="btn btn-default btn-file">
+						<span class="fileinput-new">Select image</span>
+						<span class="fileinput-exists">Change</span>
+						<input type="file" name="file">
+					</span>
+				<a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+			       </div>
+		       </div>
+		       <br>
+		<button type="submit" class="btn btn-default">Submit</button>
         </form>
-    </div>
-</div>
+
+    </div> <!-- span6 --!>
+</div> <!-- row --!>
 
 
 <div class="row">

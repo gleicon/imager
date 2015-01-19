@@ -107,10 +107,13 @@ class ImageHandler(BaseHandler, DatabaseMixin):
     def get(self, b62):
         yield self._image_exists(b62)
         (mime, img_path) = yield self._get_image_by_b62(b62)
+
         if img_path is None:
+            yield self.incr("not_found_counter")
             raise cyclone.web.HTTPError(404)
 
-        self.set_header("Content-Type", mime)
+        if mime is not None:
+            self.set_header("Content-Type", mime)
 
         object_file = open(img_path, "r")
         try:
@@ -126,6 +129,11 @@ class ImageViewerHandler(BaseHandler, DatabaseMixin):
         yield self._image_exists(b62)
         yield self.incr("image_view_handler_counter")
         self._render('image.html', image=b62)
+
+
+class SystemStatusHandler(BaseHandler, DatabaseMixin):
+    def get(self):
+        self._render('system_status.html')
 
 
 class ImageDataHandler(BaseHandler, DatabaseMixin):
@@ -146,6 +154,7 @@ class ImageLikeHandler(BaseHandler, DatabaseMixin):
         t = yield self._throttle(b62, self.request.remote_ip)
 
         if t > self.settings.max_req_per_min:
+            yield self.incr("unauthorized_counter")
             raise cyclone.web.HTTPError(401)
 
         v = yield self._like(b62)
@@ -161,8 +170,21 @@ class ImageDislikeHandler(BaseHandler, DatabaseMixin):
         t = yield self._throttle(b62, self.request.remote_ip)
 
         if t > self.settings.max_req_per_min:
+            yield self.incr("unauthorized_counter")
             raise cyclone.web.HTTPError(401)
 
         v = yield self._dislike(b62)
         yield self.incr("image_dislike_handler_counter")
         self.finish("%d" % v)
+
+
+class SystemStatusAPIHandler(BaseHandler, DatabaseMixin):
+    @defer.inlineCallbacks
+    def get(self):
+        data = yield self.dump()
+        self.set_header("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0")
+        self.set_header("Content-Type", "application/json")
+        self.finish(data)
+
+
+
