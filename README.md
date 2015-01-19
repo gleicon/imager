@@ -1,9 +1,9 @@
 # Imager
 
-	This project is based on cyclone.io default template.
     It is an image hosting application. It uses Redis to store metadata and filesystem to store the image itself.
     This application is quite naive in terms of ranking and throttle control. Images can be liked/disliked, the number of hits is accounted but there's plenty of room to improve filtering and throttling. Throttle control is configured on 1 click per hour per image (for like/dislike but can be extended to other actions)
-    
+    There's extensive use of metrics through txmetrics (https://github.com/gleicon/txmetrics) and a dashboard API/page enabled by default at <host>/api/v1/status and <host>/system_status.
+
 # Running
 
 You can use supervisord or another process supervisor to run imager/start.sh script or raw twistd command instead.
@@ -69,6 +69,6 @@ creation of this package. However, if you need a new one, you may run the
 
 ## Credits
 
-(c) 2013 
+(c) 2013, 2014, 2015 
     - [gleicon](http://blog.7co.cc)
     - [cyclone](http://github.com/fiorix/cyclone) web server.
