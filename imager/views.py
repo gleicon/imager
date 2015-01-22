@@ -33,7 +33,6 @@ class IndexHandler(BaseHandler):
 class AboutHandler(BaseHandler):
     @defer.inlineCallbacks
     def get(self):
-        yield self.incr("about_counter")
         self._render("about.html")
 
 

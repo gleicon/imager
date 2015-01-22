@@ -53,7 +53,7 @@ class MetricsMixin(object):
     @defer.inlineCallbacks
     def dump(self):
         metrics={}
-        self.incr("system_status_dump_counter")
+        yield self.incr("system_status_dump_counter")
         metrics["index_counter"]=yield self.index_counter.get_value()
         metrics["uploads_counter"]=yield self.upload_counter.get_value()
         metrics["transload_counter"]=yield self.transload_counter.get_value()
@@ -197,13 +197,13 @@ class BaseHandler(cyclone.web.RequestHandler, MetricsMixin):
     @defer.inlineCallbacks
     def _image_exists(self, b62):
         if b62 is None:
-            self.incr("not_found_counter")
+            yield self.incr("not_found_counter")
             raise cyclone.web.HTTPError(404)
 
         uuid = base62_decode(b62)
         data = yield self.redis.exists(self.IMAGER_PREFIX % uuid)
         if data == 0:
-            self.incr("not_found_counter")
+            yield self.incr("not_found_counter")
             raise cyclone.web.HTTPError(404)
         defer.returnValue(data)
 
