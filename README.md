@@ -67,6 +67,12 @@ The current cookie secret key in ``imager.conf`` was generated during the
 creation of this package. However, if you need a new one, you may run the
 ``scripts/cookie_secret.py`` script to generate a random key.
 
+### TODO
+
+Add opencv image classification
+Generate thumbnails
+Group by tags
+
 ## Credits
 
 (c) 2013, 2014, 2015 
